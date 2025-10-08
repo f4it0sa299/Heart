@@ -5,35 +5,101 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>❤️ Contador de Corações</title>
 <style>
-body { background:#111; color:#fff; text-align:center; padding-top:100px; font-family:Arial; }
-#heart { font-size:100px; cursor:pointer; transition:0.2s; }
-#heart:active { transform: scale(1.2); }
-#count { font-size:50px; color:#ff4d4d; margin-top:20px; }
+  /* Estilo geral tipo Notion */
+  body {
+    background: #1c1c1c;
+    color: #ffffff;
+    font-family: "Inter", Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    user-select: none;
+  }
+
+  h1 {
+    font-weight: 400;
+    opacity: 0.9;
+    letter-spacing: 1px;
+    margin-bottom: 50px;
+  }
+
+  #heart {
+    font-size: 120px;
+    cursor: pointer;
+    transition: transform 0.2s ease, filter 0.3s ease;
+    display: inline-block;
+  }
+
+  #heart:hover {
+    transform: scale(1.15);
+    filter: drop-shadow(0 0 20px #ff4d4d);
+  }
+
+  #count {
+    font-size: 60px;
+    margin-top: 20px;
+    font-weight: 600;
+    color: #ff4d4d;
+  }
+
+  /* Animação de batida */
+  @keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.25); }
+    100% { transform: scale(1); }
+  }
+
+  .pulse {
+    animation: pulse 0.4s ease;
+  }
+
+  .footer {
+    position: fixed;
+    bottom: 15px;
+    font-size: 14px;
+    opacity: 0.5;
+  }
 </style>
 </head>
 <body>
-<div id="heart">❤️</div>
-<div id="count">0</div>
+  <h1>Clique no coração e espalhe amor ❤️</h1>
+  <div id="heart">❤️</div>
+  <div id="count">0</div>
+  <div class="footer">Feito com 💻 por Feitosa</div>
 
-<script>
-const heartEl = document.getElementById("heart");
-const countEl = document.getElementById("count");
+  <script>
+    const heartEl = document.getElementById("heart");
+    const countEl = document.getElementById("count");
 
-async function getCount() {
-  const res = await fetch("/api/count");
-  const data = await res.json();
-  countEl.textContent = data.hearts;
-}
+    async function getCount() {
+      try {
+        const res = await fetch("/api/count");
+        const data = await res.json();
+        countEl.textContent = data.hearts;
+      } catch(err) {
+        console.error("Erro ao buscar contador:", err);
+      }
+    }
 
-async function addHeart() {
-  const res = await fetch("/api/add", { method: "POST" });
-  const data = await res.json();
-  countEl.textContent = data.hearts;
-}
+    async function addHeart() {
+      heartEl.classList.add("pulse");
+      setTimeout(() => heartEl.classList.remove("pulse"), 400);
 
-heartEl.addEventListener("click", addHeart);
-getCount();
-setInterval(getCount, 3000); // sincroniza em tempo real
-</script>
+      try {
+        const res = await fetch("/api/add", { method: "POST" });
+        const data = await res.json();
+        countEl.textContent = data.hearts;
+      } catch(err) {
+        console.error("Erro ao atualizar contador:", err);
+      }
+    }
+
+    heartEl.addEventListener("click", addHeart);
+    getCount();
+    setInterval(getCount, 3000); // Atualiza em tempo real
+  </script>
 </body>
 </html>
