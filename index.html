@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>❤️ Contador de Corações</title>
+<style>
+body { background:#111; color:#fff; text-align:center; padding-top:100px; font-family:Arial; }
+#heart { font-size:100px; cursor:pointer; transition:0.2s; }
+#heart:active { transform: scale(1.2); }
+#count { font-size:50px; color:#ff4d4d; margin-top:20px; }
+</style>
+</head>
+<body>
+<div id="heart">❤️</div>
+<div id="count">0</div>
+
+<script>
+const heartEl = document.getElementById("heart");
+const countEl = document.getElementById("count");
+
+async function getCount() {
+  const res = await fetch("/api/count");
+  const data = await res.json();
+  countEl.textContent = data.hearts;
+}
+
+async function addHeart() {
+  const res = await fetch("/api/add", { method: "POST" });
+  const data = await res.json();
+  countEl.textContent = data.hearts;
+}
+
+heartEl.addEventListener("click", addHeart);
+getCount();
+setInterval(getCount, 3000); // sincroniza em tempo real
+</script>
+</body>
+</html>
